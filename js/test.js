@@ -1,8 +1,8 @@
 /* jshint moz: true */
 $( document ).ready( function () {
-    const API_ROOT = "https://en.wikipedia.org/w/api.php",
+    const API_ROOT = "https://en.wikibooks.org/w/api.php",
           API_SUFFIX = "&format=json&callback=?&continue=",
-          TEST_PAGE = "Wikipedia:Wikipediholism test";
+          TEST_PAGE = "User:L10nM4st3r/Wikibookaholic";
 
     var score = 0;
     var revision = "0";
@@ -21,14 +21,14 @@ $( document ).ready( function () {
         revision = data.query.pages[ pageId ].revisions[ 0 ].revid;
         var pageText = data.query.pages[ pageId ].revisions[ 0 ][ "*" ]
             .replace( /{{[\s\S]+?}}/g, "" );
-        var questions = pageText.match( /==\s*The test\s*==[\s\S]+==\s*Interpreting your score\s*==/ )[ 0 ]
-            .replace( /==\s*The test\s*==/, "" ).replace( /==\s*Interpreting your score\s*==/, "" )
+        var questions = pageText.match( /==\s*Wikibookaholic test\s*==[\s\S]+==\s*Point chart\s*==/ )[ 0 ]
+            .replace( /==\s*Wikibookaholic test\s*==/, "" ).replace( /==\s*Point chart\s*==/, "" )
             .match( /\n#.+?\s*\(-?\d+.*?\)/g );
         $( "#loaded" ).text( "I just loaded " + questions.length + " questions. Let's go!" );
 
         // Initialize the "Interpret your score" table
-        var scoreLines = pageText.match( /==\s*Interpreting your score\s*==[\s\S]+==\s*Bonus questions\s*==/ )[ 0 ]
-            .replace( /==\s*Interpreting your score\s*==/, "" ).replace( /==\s*Bonus questions\s*==/, "" )
+        var scoreLines = pageText.match( /==\s*Point chart\s*==[\s\S]+/ )[ 0 ]
+            .replace( /==\s*Point chart\s*==/, "" )
             .match( /\|\s*\d+\s*(?:–|-)\s*\d+ \|\| [\S ]+/g );
         scoreLines.forEach( function ( line ) {
             var score = parseInt( line.match( /\d+/g )[1] ) + 1;
@@ -55,7 +55,7 @@ $( document ).ready( function () {
 
             // Preprocessing, including a crappy subset of the MW parser
             var text = sanitizeWikitext( fullText )
-                .replace( /\n#/, "" )
+                .replace( /\n#\**/, "" )
                 .replace( /\(-?\d[\s\S]*?\)/, "" )
                 .replace( /^\.+/, "" )
                 .trim();
@@ -64,7 +64,7 @@ $( document ).ready( function () {
             if( value === NaN ) value = 0;
 
             // Each "..." at the beginning bumps the level by one
-            var level = Math.floor( fullText.replace( /\n#/, "" ).search( /[^\.]/ ) / 3 );
+            var level = Math.floor( fullText.replace( /\n#/, "" ).search( /[^\*]/  ));
 
             return [text, value, level];
         }
@@ -143,8 +143,8 @@ $( document ).ready( function () {
         for ( cutoffScore in scoreTable ) {
             if ( score < cutoffScore ) {
                 document.getElementById( "diagnosis" ).innerHTML = "<a h" +
-                    "ref='https://en.wikipedia.org/wiki/Wikipedia:Wikipediho" +
-                    "lism_test#Interpreting_your_score'>Diagnosis</a>: " +
+                    "ref='https://en.wikipedia.org/wiki/User:L10nM4st3r/Wikibookiho" +
+                    "lic#Point chart'>Diagnosis</a>: " +
                     scoreTable[ cutoffScore ];
                 break;
             }
@@ -152,9 +152,9 @@ $( document ).ready( function () {
 
         document.getElementById( "description" ).innerHTML = "Your score was " +
             score + " point" + ( score == 1 ? "" : "s" ) + "! You can display" +
-            " your score on your <a href='https://en.wikipedia.org/wiki/Speci" +
+            " your score on your <a href='https://en.wikibooks.org/wiki/Speci" +
             "al:MyPage'>user page</a> with this code for a userbox: <tt>{{Use" +
-            "r&nbsp;Wikipediholic|" + score + "|" + revision + "}}</tt>.";
+            "r&nbsp;Wikibookaholic|" + score + "|" + revision + "}}</tt>.";
     };
 
     // Makes wikitext into HTML (sorta).
